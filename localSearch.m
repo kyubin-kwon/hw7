@@ -17,21 +17,30 @@ startTime=now*60*60*24;
 time=0;
 % do while loop, count number of seconds and recalculate delta
 % keep changing and accepting proposal until funcDelta is good
-while delta < funcDelta && time < timeDelta
+lastGoodTime=startTime;
+bestX=x;
+while time < timeDelta
     val=funcToOptimize(x);
     xp=proposalFunc(x);
-    for i=1:size(x)
-        if x(i) > upperBoundOnX
-            x(i) = upperBoundOnX;
-        elseif x(i) < lowerBoundOnX
-            x(i) = lowerBoundOnX;
+    for i=1:size(xp)
+        if xp(i) > upperBoundOnX
+            xp(i) = upperBoundOnX;
+        elseif xp(i) < lowerBoundOnX
+            xp(i) = lowerBoundOnX;
         end
     end
+    
     pval=funcToOptimize(xp);
     tmp=pval-val;
-    if tmp < 0 || tmp <= epsilon
+    if tmp <= epsilon
         x=xp;
-        delta=tmp;
+        if abs(tmp) >= funcDelta
+            lastGoodTime=now*60*60*24;
+            if pval < funcToOptimize(bestX)
+                bestX=xp;
+            end
+        end
     end
-    time=now*60*60*24 - startTime;
+    time=now*60*60*24 - lastGoodTime;
 end
+x=bestX;
