@@ -28,9 +28,10 @@ while delta < funcDelta && time < timeDelta
         end
     end
     pval=funcToOptimize(xp);
-    delta=pval-val;
-    if delta < 0 || delta <= epsilon
+    tmp=pval-val;
+    if tmp < 0 || tmp <= epsilon
         x=xp;
+        delta=tmp;
     end
     time=now*60*60*24 - startTime;
 end
