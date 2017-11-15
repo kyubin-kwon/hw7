@@ -11,16 +11,19 @@ function x=localSearch(funcToOptimize,proposalFunc,startingX,epsilon,lowerBoundO
 % not make it worse by more than epsilon. The routine terminates when timeDelta
 % seconds have passed without the best value found so far of funcToOptimize
 % improving by funcDelta.
-x=startingX;
-delta=0;
-startTime=now*60*60*24;
-time=0;
+
+
 % do while loop, count number of seconds since last x that improved by
 % funcDelta and recalculate delta
 % keep changing and accepting proposal until funcDelta is good
-lastGoodTime=startTime;
+
+x=startingX;
 bestX=x;
-while time < timeDelta
+
+startTime=now*60*60*24;
+startVal=funcToOptimize(x);
+keepGoing=true;
+while keepGoing
     val=funcToOptimize(x);
     xp=proposalFunc(x);
     
@@ -34,19 +37,23 @@ while time < timeDelta
     end
     
     pval=funcToOptimize(xp);
-    tmp=pval-val;
-    if tmp <= epsilon
+    lastDiff=pval-val;
+    if lastDiff <= epsilon
         x=xp;
-        % check if this difference is better by at least funcDelta
-        if -1*tmp >= funcDelta
-            lastGoodTime=now*60*60*24;
-        end
         % update bestX
         if pval < funcToOptimize(bestX)
             bestX=xp;
         end
     end
     % check time since last x improved by funcDelta
-    time=now*60*60*24 - lastGoodTime;
+    %time=now*60*60*24 - lastGoodTime;
+    if now*60*60*24 - startTime >= timeDelta
+        if startVal - pval < funcDelta
+            keepGoing = false;
+        else
+            startTime = now*60*60*24;
+            startVal = pval;
+        end
+    end
 end
 x=bestX;
