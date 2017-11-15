@@ -7,7 +7,7 @@ high = 2;
 e = (high-low).*rand() + low; 
 radius = 10^e; 
 
-ind = randi(numel(x)-1); 
+ind = randi(numel(x)/2)*2 - 1; 
 x(ind) = x(ind)+radius*randn();
 x(ind+1) = x(ind+1)+radius*randn();
 out = x; 
