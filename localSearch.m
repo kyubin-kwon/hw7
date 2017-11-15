@@ -15,13 +15,16 @@ x=startingX;
 delta=0;
 startTime=now*60*60*24;
 time=0;
-% do while loop, count number of seconds and recalculate delta
+% do while loop, count number of seconds since last x that improved by
+% funcDelta and recalculate delta
 % keep changing and accepting proposal until funcDelta is good
 lastGoodTime=startTime;
 bestX=x;
 while time < timeDelta
     val=funcToOptimize(x);
     xp=proposalFunc(x);
+    
+    % round values that exceed bounds
     for i=1:size(xp)
         if xp(i) > upperBoundOnX
             xp(i) = upperBoundOnX;
@@ -34,13 +37,16 @@ while time < timeDelta
     tmp=pval-val;
     if tmp <= epsilon
         x=xp;
-        if abs(tmp) >= funcDelta
+        % check if this difference is better by at least funcDelta
+        if -1*tmp >= funcDelta
             lastGoodTime=now*60*60*24;
-            if pval < funcToOptimize(bestX)
-                bestX=xp;
-            end
+        end
+        % update bestX
+        if pval < funcToOptimize(bestX)
+            bestX=xp;
         end
     end
+    % check time since last x improved by funcDelta
     time=now*60*60*24 - lastGoodTime;
 end
 x=bestX;
